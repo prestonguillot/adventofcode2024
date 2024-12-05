@@ -43,35 +43,11 @@ public static class Solver
     {
         _input = InputData.From(input);
 
-        var badPageLists = _input.PageLists.Where(pageList => !PageListIsValid(pageList));
-
-       return badPageLists.Select(badList =>
-        {
-            var workingCopy = badList.ToList();
-
-            for (var i = 0; i < badList.Count; )
-            {
-                var curPage = workingCopy[i];
-                var badPages = workingCopy.Skip(i+1).ToHashSet().Except(_input.OrderingRules.GetValueOrDefault(curPage, ImmutableHashSet<int>.Empty)).ToList();
-
-                if (badPages.Any())
-                {
-                    var newPosition = badPages.Select(x => workingCopy.IndexOf(x)).Max();
-                    workingCopy.RemoveAt(i);
-                    workingCopy.Insert(newPosition, curPage);
-                }
-                else
-                {
-                    i++;
-                }
-            }
-
-            return workingCopy;
-        })
-                    .Select(pageList => pageList[pageList.Count / 2])
-                    .Sum();
-
-       return 1;
+        return _input.PageLists
+                     .Where(pageList => !PageListIsValid(pageList))
+                     .Select(ConvertToValidOrdering)
+                     .Select(pageList => pageList[pageList.Count / 2])
+                     .Sum();
     }
 
     private static bool PageListIsValid(IList<int> pageList)
@@ -80,5 +56,27 @@ public static class Solver
                                                        _input.OrderingRules.ContainsKey(pageNumber) &&
                                                        _input.OrderingRules[pageNumber].IsSupersetOf(pageList.Skip(i+1)))
                        .Count() == pageList.Count;
+    }
+
+    private static ImmutableList<int> ConvertToValidOrdering(IList<int> badList)
+    {
+        var workingCopy = badList.ToList();
+        var i = 0;
+
+        while(i < badList.Count)
+        {
+            var curPage = workingCopy[i];
+            var badPages = workingCopy.Skip(i+1).ToHashSet().Except(_input.OrderingRules.GetValueOrDefault(curPage, ImmutableHashSet<int>.Empty)).ToList();
+
+            if (badPages.Count != 0)
+            {
+                var newPosition = badPages.Select(x => workingCopy.IndexOf(x)).Max();
+                workingCopy.RemoveAt(i);
+                workingCopy.Insert(newPosition, curPage);
+            }
+            else i++;
+        }
+
+        return workingCopy.ToImmutableList();
     }
 }
