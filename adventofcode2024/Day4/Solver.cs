@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace adventofcode2024.Day4;
+﻿namespace adventofcode2024.Day4;
 
 public static class Solver
 {

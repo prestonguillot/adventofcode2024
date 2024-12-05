@@ -16,4 +16,8 @@
 // Console.WriteLine(adventofcode2024.Day4.Solver.SolvePartOne(adventofcode2024.Day4.Data.PartOne.testData));
 // Console.WriteLine(adventofcode2024.Day4.Solver.SolvePartOne(adventofcode2024.Day4.Data.PartOne.trialData));
 // Console.WriteLine(adventofcode2024.Day4.Solver.SolvePartTwo(adventofcode2024.Day4.Data.PartTwo.testData));
-Console.WriteLine(adventofcode2024.Day4.Solver.SolvePartTwo(adventofcode2024.Day4.Data.PartTwo.trialData));
+// Console.WriteLine(adventofcode2024.Day4.Solver.SolvePartTwo(adventofcode2024.Day4.Data.PartTwo.trialData));
+// Console.WriteLine(adventofcode2024.Day5.Solver.SolvePartOne(adventofcode2024.Day5.Data.testData));
+// Console.WriteLine(adventofcode2024.Day5.Solver.SolvePartOne(adventofcode2024.Day5.Data.trialData));
+Console.WriteLine(adventofcode2024.Day5.Solver.SolvePartTwo(adventofcode2024.Day5.Data.testData));
+// Console.WriteLine(adventofcode2024.Day5.Solver.SolvePartTwo(adventofcode2024.Day5.Data.trialData));
