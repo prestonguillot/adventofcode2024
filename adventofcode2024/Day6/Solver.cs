@@ -14,7 +14,7 @@ public static class Solver
             return direction switch
             {
                 Direction.Up    => this with { Y = Y + 1 },
-                Direction.Right => this with { X = X + 1},
+                Direction.Right => this with { X = X + 1 },
                 Direction.Down  => this with { Y = Y - 1 },
                 Direction.Left  => this with { X = X - 1 },
                 _ => throw new ArgumentOutOfRangeException()
@@ -26,7 +26,7 @@ public static class Solver
     {
         private int Height => height;
         private int Width => width;
-        public ImmutableHashSet<Coordinate> Obstacles => obstacles.ToImmutableHashSet();
+        public ImmutableHashSet<Coordinate> Obstacles { get; } = obstacles.ToImmutableHashSet();
 
         public bool IsInBounds(Coordinate location) => location.X >= 1 && location.X <= Width && location.Y >= 1 && location.Y <= Height;
     }
@@ -78,6 +78,24 @@ public static class Solver
 
             return visited.ToImmutableHashSet();
         }
+
+        public bool IsTrapped()
+        {
+            var visited = new HashSet<Tuple<Coordinate, Direction>>();
+
+            while (Map.IsInBounds(Location))
+            {
+                if (visited.Contains(new Tuple<Coordinate, Direction>(Location, Direction))) return true;
+                visited.Add(Tuple.Create(Location, Direction));
+                while (IsFacingObstacle())
+                {
+                    Rotate();
+                }
+                Advance();
+            }
+
+            return false;
+        }
     }
 
     public static long SolvePartOne(string input)
@@ -110,8 +128,48 @@ public static class Solver
         return guard.Patrol().Count;
     }
 
-    public static long SolvePartTwo(string input)
+    public static int SolvePartTwo(string input)
     {
-        throw new NotImplementedException();
+        var lines = input.Split('\n');
+        var height = lines.Length;
+        var width = lines[0].Length;
+        var trials = new List<Guard>();
+
+        for (var i = 0; i < height; i++)
+        {
+            for (var j = 0; j < width; j++)
+            {
+                if (lines[i][j] != '.') continue;
+
+                var newLine = lines[i].ToCharArray();
+                newLine[j] = '#';
+                var newLines = lines.Take(i).Concat([new string(newLine)]).Concat(lines.Skip(i+1).Select(x => x)).ToArray();
+
+                var obstacles = new List<Coordinate>();
+                var guardLocation = new Coordinate(0, 0);
+
+                for (var k = 0; k < height; k++)
+                {
+                    for (var l = 0; l < width; l++)
+                    {
+                        switch (newLines[k][l])
+                        {
+                            case '#':
+                                obstacles.Add(new Coordinate(l + 1, height - k));
+                                break;
+                            case '^':
+                                guardLocation = new Coordinate(l + 1, height - k);
+                                break;
+                        }
+                    }
+                }
+
+                var map = new Map(height, width, obstacles);
+                var guard = new Guard(guardLocation, map);
+                trials.Add(guard);
+            }
+        }
+
+        return trials.Count(guard => guard.IsTrapped());
     }
 }
