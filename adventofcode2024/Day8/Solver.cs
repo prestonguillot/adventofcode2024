@@ -43,8 +43,8 @@ public class Solver
             {
                 foreach (var otherAntenna in antennaArray.Value.Except([antenna]))
                 {
-                    var distance = (xDistance: otherAntenna.X - antenna.X, yDistance:otherAntenna.Y - antenna.Y);
-                    var antiNode = new Coordinate(otherAntenna.X + distance.xDistance, otherAntenna.Y + distance.yDistance);
+                    var distance = (X: otherAntenna.X - antenna.X, Y:otherAntenna.Y - antenna.Y);
+                    var antiNode = new Coordinate(otherAntenna.X + distance.X, otherAntenna.Y + distance.Y);
                     if (map.IsInBounds(antiNode)) antiNodes.Add(antiNode);
                 }
             }
@@ -55,6 +55,29 @@ public class Solver
 
     public static long SolvePartTwo(string input)
     {
-        throw new NotImplementedException();
+        var map = Map.From(input);
+        var antiNodes = new HashSet<Coordinate>();
+
+        foreach (var antennaArray in map.Antennas)
+        {
+            foreach (var antenna in antennaArray.Value)
+            {
+                if (antennaArray.Value.Count > 1) antiNodes.Add(antenna);
+
+                foreach (var otherAntenna in antennaArray.Value.Except([antenna]))
+                {
+                    var distance = (X: otherAntenna.X - antenna.X, Y:otherAntenna.Y - antenna.Y);
+                    var antiNode = new Coordinate(otherAntenna.X + distance.X, otherAntenna.Y + distance.Y);
+
+                    while (map.IsInBounds(antiNode))
+                    {
+                        antiNodes.Add(antiNode);
+                        antiNode = new Coordinate(antiNode.X + distance.X, antiNode.Y + distance.Y);
+                    }
+                }
+            }
+        }
+
+        return antiNodes.Count;
     }
 }
