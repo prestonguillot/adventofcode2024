@@ -37,6 +37,7 @@ public static class Solver
         Times,
         Concatenate
     }
+
     private static IEnumerable<IEnumerable<Operator>> GenerateOperators(long num, ImmutableList<Operator> operators)
     {
         if (num == 1)
