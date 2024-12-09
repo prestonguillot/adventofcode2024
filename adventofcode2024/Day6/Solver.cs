@@ -85,8 +85,8 @@ public static class Solver
 
             while (Map.IsInBounds(Location))
             {
-                if (visited.Contains(new Tuple<Coordinate, Direction>(Location, Direction))) return true;
-                visited.Add(Tuple.Create(Location, Direction));
+                var locationAndDirection = Tuple.Create(Location, Direction);
+                if (!visited.Add(locationAndDirection)) return true;
                 while (IsFacingObstacle())
                 {
                     Rotate();
@@ -170,6 +170,11 @@ public static class Solver
             }
         }
 
-        return trials.Count(guard => guard.IsTrapped());
+        var counter = 1;
+        return trials.Count(guard =>
+        {
+            Console.WriteLine("trial: {0}", counter++);
+            return guard.IsTrapped();
+        });
     }
 }
