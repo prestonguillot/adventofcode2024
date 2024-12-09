@@ -4,29 +4,26 @@ public static class Solver
 {
     public static long SolvePartOne(string input)
     {
-        var expanded = input.Aggregate((value: string.Empty, fileID: 0, isFreeSpace: false), (cur, c) =>
+        Console.WriteLine(input);
+
+        var expanded = input.Aggregate((value: Enumerable.Empty<string>(), fileID: 0, isFreeSpace: false), (cur, c) =>
         {
             var asNum = int.Parse(c.ToString());
-            var additive = string.Concat(Enumerable.Repeat(cur.isFreeSpace ? "." : cur.fileID.ToString(), asNum));
+            var additive = Enumerable.Repeat(cur.isFreeSpace ? "." : cur.fileID.ToString(), asNum);
             var fileId = cur.isFreeSpace ? cur.fileID : cur.fileID + 1;
-            return (cur.value + additive, fileId, !cur.isFreeSpace);
-        }).value;
+            return (cur.value.Concat(additive) , fileId, !cur.isFreeSpace);
+        }).value.ToList();
+        Console.WriteLine(string.Join("", expanded));
 
-        Console.WriteLine(input);
-        Console.WriteLine(expanded);
-
-        var compacted = expanded.Aggregate((value: string.Empty, i: 0, j: expanded.Length - 1), (cur, c) =>
+        var compacted = expanded.Aggregate((value: Enumerable.Empty<string>(), i: 0, j: expanded.FindLastIndex(x => x != ".")), (cur, str) =>
         {
             if (cur.j < cur.i) return cur;
-            if (c != '.') return (cur.value + c, cur.i + 1, cur.j);
-            var j = cur.j;
-            while(expanded[j] == '.') j--;
-            return (cur.value + expanded[j], cur.i + 1, j - 1);
-        }).value;
+            else if (str != ".") return (cur.value.Concat([str]), cur.i + 1, cur.j);
+            else return (cur.value.Concat([expanded[cur.j]]), cur.i + 1, expanded.Take(cur.j).ToList().FindLastIndex(x => x != "."));
+        }).value.ToArray();
+        Console.WriteLine(string.Join("", compacted));
 
-        Console.WriteLine(compacted);
-
-        return compacted.Aggregate((value: 0L, i: 0L), (cur, c) => (cur.value + long.Parse(c.ToString()) * cur.i, cur.i + 1)).value;
+        return compacted.Aggregate((value: 0L, i: 0L), (cur, c) => (cur.value + long.Parse(c) * cur.i, cur.i + 1)).value;
     }
 
     public static long SolvePartTwo(string input)
